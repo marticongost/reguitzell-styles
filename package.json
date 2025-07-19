@@ -1,0 +1,21 @@
+{
+  "name": "@reguitzell/styles",
+  "version": "1.0.0",
+  "description": "CSS utilities & responsive design",
+  "license": "GPL-3.0-only",
+  "author": "Martí Congost",
+  "main": "",
+  "style": "scss/index.scss",
+  "files": [
+    "scss"
+  ],
+  "keywords": [
+    "sass",
+    "scss",
+    "styles",
+    "library"
+  ],
+  "peerDependencies": {
+    "sass": "^1.0.0"
+  }
+}

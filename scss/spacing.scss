@@ -1,0 +1,44 @@
+@function isGridSizeReference($spec) {
+  @return (
+    $spec == "xs" or $spec == "sm" or $spec == "md" or $spec == "lg" or $spec ==
+      "xl" or $spec == "xxl"
+  );
+}
+
+@function size($value) {
+  @if isGridSizeReference($value) {
+    @return "var(--grid-#{$value})";
+  } @else if $value == null {
+    @return 0;
+  } @else {
+    @return $value;
+  }
+}
+
+@mixin padding($value) {
+  padding: #{size($value)};
+}
+
+@mixin hpadding($value) {
+  padding-left: #{size($value)};
+  padding-right: #{size($value)};
+}
+
+@mixin vpadding($value) {
+  padding-top: #{size($value)};
+  padding-bottom: #{size($value)};
+}
+
+@mixin margin($value) {
+  margin: #{size($value)};
+}
+
+@mixin hmargin($value) {
+  margin-left: #{size($value)};
+  margin-right: #{size($value)};
+}
+
+@mixin vmargin($value) {
+  margin-top: #{size($value)};
+  margin-bottom: #{size($value)};
+}
