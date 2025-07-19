@@ -1,5 +1,6 @@
 {
   "name": "@reguitzell/styles",
+  "private": false,
   "version": "1.0.0",
   "description": "CSS utilities & responsive design",
   "license": "GPL-3.0-only",
