@@ -1,0 +1,144 @@
+@use "sass:map";
+@use "sass:list";
+
+$_breakpoints: null;
+
+@mixin default-breakpoints {
+  @include define-breakpoints(
+    (
+      S: 700px,
+      M: 1024px,
+      L: 1300px,
+      XL: 1900px,
+    )
+  );
+}
+
+@mixin define-breakpoints($breakpoint-min-widths) {
+  $_breakpoints: (
+    XS: 0,
+  ) !global;
+  @each $breakpoint, $min-width in $breakpoint-min-widths {
+    $_breakpoints: map.set($_breakpoints, $breakpoint, $min-width) !global;
+  }
+}
+
+@function require-breakpoints() {
+  @if $_breakpoints == null {
+    @error "Breakpoints are not defined. Use @include default-breakpoints() or @include define-breakpoints() first.";
+  }
+  @return $_breakpoints;
+}
+
+@function breakpoint-names() {
+  $breakpoints: require-breakpoints();
+  @return map.keys($breakpoints);
+}
+
+@function previous-breakpoint($anchor-breakpoint) {
+  $breakpoints: require-breakpoints();
+  $previous: null;
+  @each $breakpoint, $min-width in $breakpoints {
+    @if $breakpoint == $anchor-breakpoint {
+      @return $previous;
+    }
+  }
+  @return null;
+}
+
+@function next-breakpoint($anchor-breakpoint) {
+  $breakpoints: require-breakpoints();
+  $previous: null;
+  $is-biggest-breakpoint: false;
+  @each $breakpoint, $min-width in $breakpoints {
+    @if $previous == $anchor-breakpoint {
+      @return $breakpoint;
+    }
+    $previous: $breakpoint;
+    $is-biggest-breakpoint: $breakpoint == $anchor-breakpoint;
+  }
+  @if $is-biggest-breakpoint {
+    @return null;
+  } @else {
+    @error "Unknown breakpoint: #{$anchor-breakpoint}";
+  }
+}
+
+@function min-breakpoint-width($breakpoint) {
+  $breakpoints: require-breakpoints();
+  $min-width: map.get($breakpoints, $breakpoint);
+  @if $min-width == null {
+    @error "Unknown breakpoint: #{$breakpoint}";
+  }
+  @return $min-width;
+}
+
+@function max-breakpoint-width($breakpoint) {
+  $next-breakpoint: next-breakpoint($breakpoint);
+  @if $next-breakpoint == null {
+    @return null;
+  }
+  @return min-breakpoint-width($next-breakpoint) - 1px;
+}
+
+@mixin exactly($breakpoint) {
+  $min-width: min-breakpoint-width($breakpoint);
+  $max-width: max-breakpoint-width($breakpoint);
+  @if $min-width != null and $max-width != null {
+    @media (min-width: #{$min-width}) and (max-width: #{$max-width}) {
+      @content;
+    }
+  } @else if $min-width != null {
+    @media (min-width: #{$min-width}) {
+      @content;
+    }
+  } @else if $max-width != null {
+    @media (max-width: #{$max-width}) {
+      @content;
+    }
+  }
+}
+
+@mixin at-least($breakpoint) {
+  $min-width: min-breakpoint-width($breakpoint);
+  @if $min-width == 0 {
+    @content;
+  } @else {
+    @media (min-width: #{$min-width}) {
+      @content;
+    }
+  }
+}
+
+@mixin bigger-than($breakpoint) {
+  $max-width: max-breakpoint-width($breakpoint);
+  @if $max-width == null {
+    @content;
+  } @else {
+    @media (min-width: #{$max-width + 1px}) {
+      @content;
+    }
+  }
+}
+
+@mixin at-most($breakpoint) {
+  $max-width: max-breakpoint-width($breakpoint);
+  @if $max-width == null {
+    @content;
+  } @else {
+    @media (max-width: #{$max-width}) {
+      @content;
+    }
+  }
+}
+
+@mixin smaller-than($breakpoint) {
+  $max-width: min-breakpoint-width($breakpoint);
+  @if $max-width == null {
+    @content;
+  } @else {
+    @media (max-width: #{$max-width - 1px}) {
+      @content;
+    }
+  }
+}
