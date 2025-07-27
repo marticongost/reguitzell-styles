@@ -1,3 +1,11 @@
+@mixin define-grid($medium-size: 1rem) {
+  --grid-xs: #{$medium-size * 0.25};
+  --grid-sm: #{$medium-size * 0.5};
+  --grid-md: #{$medium-size};
+  --grid-lg: #{$medium-size * 2};
+  --grid-xl: #{$medium-size * 4};
+}
+
 @function isGridSizeReference($spec) {
   @return (
     $spec == "xs" or $spec == "sm" or $spec == "md" or $spec == "lg" or $spec ==
